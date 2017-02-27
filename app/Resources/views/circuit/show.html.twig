@@ -1,0 +1,118 @@
+{% extends 'agvoybase.html.twig' %}
+
+{% block main %}
+    	
+	<div class="circuit">
+    	<h2>
+       		{{ circuit.description }}
+       	</h2>
+    	
+    	<h3>Détails</h3>
+		<div class="circuit_details">
+		
+			<p>Description: {{ circuit.description }}</p>
+			
+			<p>Départ de {{ circuit.villeDepart }} pour {{ circuit.dureeCircuit }} j. de voyage à travers le {{ circuit.paysDepart }}, pour terminer à {{ circuit.villeArrivee }}.</p>
+			
+			{% if app.user and is_granted('ROLE_ADMIN') %}
+			<a href="{{ path('admin_circuit_edit', { 'id': circuit.id }) }}"> Modifier Circuit</a>
+	{%     endif %}
+			
+			<h3>Étapes</h3>
+			{% if app.user and is_granted('ROLE_ADMIN') %}
+				<a href="{{ path('new_etape', { 'id': circuit.id }) }}">Ajouter Étape</a>
+			{% endif %}
+		 	<table class="table table-condensed">
+		 		<thead>
+					<tr>
+				    	<th>Numéro</th>
+						<th>Ville</th>
+						<th>Nombre jours</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+ 			{% for etape in circuit.etapes %}
+	 		<tr>
+			   	<td>{{ etape.numeroEtape }}</td>
+			   	<td>{{ etape.villeEtape }}</td> 
+			   	<td>{{ etape.nombreJours }} j.</td>
+                {% if app.user and is_granted('ROLE_ADMIN') %}
+			   		<td> <a href='{{ path('edit_etape', { 'id':circuit.id, 'etape_id': etape.id }) }}'>Modifier</a> </td>
+			   		<td> <a href='{{ path('delete_etape', { 'id':circuit.id, 'etape_id': etape.id }) }}' onclick="return(confirm('Etes-vous sur de vouloir supprimer cette Etape ?'))">Supprimer</a> </td>
+				{% endif %}
+			</tr>
+			{% endfor %} {# circuit.etapes #}
+			</tbody>
+			</table>
+		</div> {# circuit_details #}
+		
+		<div class="programmations">
+		<h3>Programmations de ce circuit</h3>
+		{% if app.user and is_granted('ROLE_ADMIN') %}
+			<a href="{{ path('new_prog', { 'id': circuit.id }) }}">Ajouter Programmation Circuit</a>
+		{% endif %}
+		<table class="table table-condensed">
+		 		<thead>
+					<tr>
+				    	<th>Date de départ</th>
+						<th>Nombre de personnes</th>
+						<th>Prix</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+		{%  for programmation in circuit.programmations %}
+			<tr>
+			   <td>{{ programmation.dateDepart|date('d-m-Y')  }}</td>
+			   <td>{{ programmation.nombrePersonnes }}</td> 
+			   <td>{{ programmation.prix }} euros</td>
+			   {% if app.user and is_granted('ROLE_ADMIN') %}
+			   		<td> <a href='{{ path('edit_prog', { 'id':circuit.id, 'prog_id': programmation.id }) }}'>Modifier</a> </td>
+			   		<td> <a href='{{ path('delete_prog', { 'id':circuit.id, 'prog_id': programmation.id }) }}' onclick="return(confirm('Etes-vous sur de vouloir supprimer ce programme ?'))">Supprimer</a> </td>			
+			   {% endif %}
+			</tr>
+		{% endfor %}
+		</table>
+	</div> {# programmations #}
+    <ul>
+    
+    
+    <h2>Comments:</h2>
+    {% if app.user %}
+    <div class="">
+        
+        {{ form_start(commentform) }} 
+        {{ form_errors(commentform) }} 
+		{{ form_row(commentform.content, { 'attr': {'class': 'form-control'} }) }} 
+        {{ form_end(commentform) }}
+      
+   	</div>
+   	{% else %}
+   		<a href="/login">Veuillez vous connecter pour ajouter un commentaire</a>
+    {% endif %}
+   <ul>
+        {% for comment in circuit.comments %}
+        {% dump(comment) %}
+        	<li>
+        		<a href="{{ path('circuit_show', {'id': circuit.id, 'comment_id': comment.id}) }}">
+        			<strong>By {{ comment.authorEmail }} on {{ comment.publishedAt|localizeddate('medium', 'short', null, 'UTC') }}:</strong>
+        		</a>
+        		<br>
+        	    {{ comment.content }}
+        	
+        	</li>
+        {% endfor %}
+        </ul>
+    
+    
+    
+    	<p></p>
+        <li>
+            <a href="{{ path('circuit_index') }}">Retour à la liste</a>
+        </li>
+    </ul>
+	</div> {# circuit #}
+    
+{% endblock %}  {# main #}

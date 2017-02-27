@@ -1,0 +1,14 @@
+{% extends 'agvoybase.html.twig' %}
+
+
+{% block main %}
+    <h1>Ajouter Nouveau Circuit</h1>
+    {{ form_start(form) }}
+    {{ form_errors(form) }} 
+    {{ form_row(form.Description, { 'attr': {'class': 'form-control'} }) }}
+    {{ form_row(form.Paysdepart,{ 'attr': {'class': 'form-control'} }) }} 
+    {{ form_row(form.Villedepart, { 'attr': {'class': 'form-control'} }) }} 
+    {{ form_row(form.Villearrivee, { 'attr': {'class': 'form-control'} }) }} 
+    {{ form_row(form.checkbox, { 'attr': {'class': 'form-control'} }) }} 
+    {{ form_end(form) }}
+{% endblock %}
